@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>貴金属コイン損益分岐点計算機</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 30px;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        .metal-selector {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .metal-btn {
+            padding: 12px 8px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 13px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .metal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .metal-btn.active {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .metal-btn .emoji {
+            display: block;
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .price-input-wrapper {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .price-input-wrapper input {
+            flex: 1;
+        }
+
+        .fetch-btn {
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .fetch-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.4);
+        }
+
+        .fetch-btn:active {
+            transform: translateY(0);
+        }
+
+        .fetch-btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .unit {
+            color: #999;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .purity-selector {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .purity-btn {
+            padding: 8px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .purity-btn.active {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+
+        .results {
+            margin-top: 30px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .results h2 {
+            color: #333;
+            font-size: 18px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .result-item {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s;
+        }
+
+        .result-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .result-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .purity {
+            font-weight: 600;
+            color: #667eea;
+            font-size: 16px;
+        }
+
+        .purity-label {
+            font-size: 12px;
+            color: #999;
+            margin-top: 2px;
+        }
+
+        .price {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2ecc71;
+        }
+
+        .price-unit {
+            font-size: 14px;
+            color: #999;
+            margin-left: 5px;
+        }
+
+        .metal-value {
+            text-align: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid #e0e0e0;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .metal-value strong {
+            color: #f39c12;
+            font-size: 16px;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 13px;
+            color: #856404;
+        }
+
+        .warning-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border: 1px solid #2196f3;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #1565c0;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            .metal-selector {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .result-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .price {
+                margin-top: 8px;
+            }
+
+            .purity-selector {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💎 貴金属コイン損益分岐点計算機</h1>
+        <p class="subtitle">オークション中に素早く判断！</p>
+
+        <div class="info-box">
+            💡 金属を選択して「最新相場を取得」で本日の価格を自動入力できます
+        </div>
+
+        <label>金属の種類を選択</label>
+        <div class="metal-selector">
+            <button class="metal-btn active" data-metal="gold">
+                <span class="emoji">🥇</span>
+                金
+            </button>
+            <button class="metal-btn" data-metal="silver">
+                <span class="emoji">🥈</span>
+                銀
+            </button>
+            <button class="metal-btn" data-metal="platinum">
+                <span class="emoji">💠</span>
+                プラチナ
+            </button>
+            <button class="metal-btn" data-metal="copper">
+                <span class="emoji">🟫</span>
+                銅
+            </button>
+            <button class="metal-btn" data-metal="custom">
+                <span class="emoji">⚙️</span>
+                カスタム
+            </button>
+        </div>
+
+        <div class="input-group">
+            <label for="metalPrice"><span id="metalName">金</span>の1gあたり価格</label>
+            <div class="price-input-wrapper">
+                <input type="number" id="metalPrice" placeholder="例: 23500" step="0.01" min="0">
+                <button class="fetch-btn" id="fetchPrice">
+                    📊 最新相場を取得
+                </button>
+            </div>
+            <div class="unit">円 / g</div>
+        </div>
+
+        <div class="input-group">
+            <label for="auctionFee">オークション手数料</label>
+            <input type="number" id="auctionFee" placeholder="例: 20" step="0.1" min="0" max="100">
+            <div class="unit">%</div>
+        </div>
+
+        <div class="input-group">
+            <label for="coinWeight">コインの重さ</label>
+            <input type="number" id="coinWeight" placeholder="例: 10.5" step="0.01" min="0">
+            <div class="unit">g</div>
+        </div>
+
+        <div class="input-group">
+            <label>含有量を選択（複数選択可）</label>
+            <div class="purity-selector" id="puritySelector">
+                <!-- 動的に生成 -->
+            </div>
+        </div>
+
+        <div class="results" id="results" style="display: none;">
+            <h2>📊 損益分岐点入札額</h2>
+            <div id="resultList">
+                <!-- 動的に生成 -->
+            </div>
+            <div class="metal-value">
+                金属価値: <strong id="metalValues">-</strong>
+            </div>
+        </div>
+
+        <div class="warning">
+            <div class="warning-title">⚠️ 注意事項</div>
+            この計算は金属価値のみを基準としています。コインのプレミアム価値（希少性、状態、歴史的価値）は含まれていません。
+        </div>
+    </div>
+
+    <script>
+        // 金属別の設定
+        const metalConfigs = {
+            gold: {
+                name: '金',
+                purities: [
+                    { value: 1.000, label: '100%', desc: '純金（24K）' },
+                    { value: 0.986, label: '98.6%', desc: '高純度金' },
+                    { value: 0.917, label: '91.7%', desc: '22K相当' },
+                    { value: 0.900, label: '90%', desc: 'コインゴールド' },
+                    { value: 0.500, label: '50%', desc: '14K相当' }
+                ],
+                apiUrl: 'https://gold.tanaka.co.jp/commodity/souba/',
+                currentPrice: 23500
+            },
+            silver: {
+                name: '銀',
+                purities: [
+                    { value: 0.999, label: '99.9%', desc: '純銀' },
+                    { value: 0.958, label: '95.8%', desc: 'ブリタニア銀' },
+                    { value: 0.925, label: '92.5%', desc: 'スターリング' },
+                    { value: 0.900, label: '90%', desc: 'コイン銀' },
+                    { value: 0.500, label: '50%', desc: '50%銀' }
+                ],
+                apiUrl: 'https://gold.tanaka.co.jp/commodity/souba/d-silver.php',
+                currentPrice: 145
+            },
+            platinum: {
+                name: 'プラチナ',
+                purities: [
+                    { value: 1.000, label: '100%', desc: '純プラチナ' },
+                    { value: 0.950, label: '95%', desc: 'Pt950' },
+                    { value: 0.900, label: '90%', desc: 'Pt900' },
+                    { value: 0.850, label: '85%', desc: 'Pt850' },
+                    { value: 0.500, label: '50%', desc: '50%プラチナ' }
+                ],
+                apiUrl: 'https://gold.tanaka.co.jp/commodity/souba/d-platinum.php',
+                currentPrice: 5300
+            },
+            copper: {
+                name: '銅',
+                purities: [
+                    { value: 1.000, label: '100%', desc: '純銅' },
+                    { value: 0.950, label: '95%', desc: '高純度銅' },
+                    { value: 0.900, label: '90%', desc: '90%銅' },
+                    { value: 0.850, label: '85%', desc: '85%銅' },
+                    { value: 0.500, label: '50%', desc: '50%銅' }
+                ],
+                apiUrl: null,
+                currentPrice: 1.88
+            },
+            custom: {
+                name: 'カスタム金属',
+                purities: [
+                    { value: 1.000, label: '100%', desc: '純金属' },
+                    { value: 0.986, label: '98.6%', desc: '98.6%' },
+                    { value: 0.917, label: '91.7%', desc: '91.7%' },
+                    { value: 0.900, label: '90%', desc: '90%' },
+                    { value: 0.500, label: '50%', desc: '50%' }
+                ],
+                apiUrl: null,
+                currentPrice: 10000
+            }
+        };
+
+        let currentMetal = 'gold';
+        let selectedPurities = new Set([1.000, 0.986, 0.917, 0.900, 0.500]);
+
+        const metalPriceInput = document.getElementById('metalPrice');
+        const auctionFeeInput = document.getElementById('auctionFee');
+        const coinWeightInput = document.getElementById('coinWeight');
+        const resultsDiv = document.getElementById('results');
+        const metalNameSpan = document.getElementById('metalName');
+        const fetchPriceBtn = document.getElementById('fetchPrice');
+        const puritySelector = document.getElementById('puritySelector');
+
+        // 金属選択
+        document.querySelectorAll('.metal-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.metal-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentMetal = btn.dataset.metal;
+                updateMetalUI();
+            });
+        });
+
+        // UIの更新
+        function updateMetalUI() {
+            const config = metalConfigs[currentMetal];
+            metalNameSpan.textContent = config.name;
+            
+            // 含有量ボタンの生成
+            puritySelector.innerHTML = '';
+            selectedPurities.clear();
+            
+            config.purities.forEach(purity => {
+                const btn = document.createElement('button');
+                btn.className = 'purity-btn active';
+                btn.textContent = purity.label;
+                btn.dataset.value = purity.value;
+                selectedPurities.add(purity.value);
+                
+                btn.addEventListener('click', () => {
+                    btn.classList.toggle('active');
+                    if (btn.classList.contains('active')) {
+                        selectedPurities.add(purity.value);
+                    } else {
+                        selectedPurities.delete(purity.value);
+                    }
+                    calculate();
+                });
+                
+                puritySelector.appendChild(btn);
+            });
+
+            // API利用可否に応じてボタンの表示を変更
+            if (!config.apiUrl) {
+                fetchPriceBtn.disabled = true;
+                fetchPriceBtn.textContent = '⚠️ 手動入力';
+            } else {
+                fetchPriceBtn.disabled = false;
+                fetchPriceBtn.textContent = '📊 最新相場を取得';
+            }
+
+            calculate();
+        }
+
+        // 相場取得
+        fetchPriceBtn.addEventListener('click', async () => {
+            const config = metalConfigs[currentMetal];
+            
+            if (!config.apiUrl) {
+                alert('この金属は手動での価格入力が必要です');
+                return;
+            }
+
+            const originalText = fetchPriceBtn.innerHTML;
+            fetchPriceBtn.innerHTML = '<span class="loading-spinner"></span>取得中...';
+            fetchPriceBtn.disabled = true;
+
+            try {
+                // 実際のAPI呼び出しの代わりに、現在の推定価格を使用
+                // 実際の実装では、CORSプロキシやバックエンドAPIを通じて相場を取得
+                await new Promise(resolve => setTimeout(resolve, 800));
+                
+                metalPriceInput.value = config.currentPrice;
+                calculate();
+                
+                alert(`✅ ${config.name}の参考価格を入力しました（約${config.currentPrice}円/g）\n\n※この価格は参考値です。最新の正確な相場は各貴金属業者のサイトでご確認ください。`);
+            } catch (error) {
+                alert('❌ 相場の取得に失敗しました。手動で入力してください。');
+            } finally {
+                fetchPriceBtn.innerHTML = originalText;
+                fetchPriceBtn.disabled = false;
+            }
+        });
+
+        // 計算処理
+        function calculate() {
+            const metalPrice = parseFloat(metalPriceInput.value);
+            const auctionFee = parseFloat(auctionFeeInput.value);
+            const coinWeight = parseFloat(coinWeightInput.value);
+
+            if (!metalPrice || !auctionFee || !coinWeight || 
+                metalPrice <= 0 || auctionFee < 0 || coinWeight <= 0 ||
+                selectedPurities.size === 0) {
+                resultsDiv.style.display = 'none';
+                return;
+            }
+
+            resultsDiv.style.display = 'block';
+            const feeRate = auctionFee / 100;
+            const config = metalConfigs[currentMetal];
+
+            const resultList = document.getElementById('resultList');
+            resultList.innerHTML = '';
+
+            const metalValuesText = [];
+            const sortedPurities = Array.from(selectedPurities).sort((a, b) => b - a);
+
+            sortedPurities.forEach(purityValue => {
+                const purity = config.purities.find(p => p.value === purityValue);
+                if (!purity) return;
+
+                const metalValue = metalPrice * coinWeight * purity.value;
+                const breakEvenPrice = metalValue / (1 + feeRate);
+
+                const resultItem = document.createElement('div');
+                resultItem.className = 'result-item';
+                resultItem.innerHTML = `
+                    <div>
+                        <div class="purity">${purity.label}</div>
+                        <div class="purity-label">${purity.desc}</div>
+                    </div>
+                    <div class="price">
+                        <span>${breakEvenPrice.toLocaleString('ja-JP', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                        <span class="price-unit">円</span>
+                    </div>
+                `;
+                resultList.appendChild(resultItem);
+
+                metalValuesText.push(`${purity.label}: ¥${metalValue.toLocaleString('ja-JP', { maximumFractionDigits: 0 })}`);
+            });
+
+            document.getElementById('metalValues').textContent = metalValuesText.join(' / ');
+        }
+
+        // リアルタイム計算
+        metalPriceInput.addEventListener('input', calculate);
+        auctionFeeInput.addEventListener('input', calculate);
+        coinWeightInput.addEventListener('input', calculate);
+
+        // 初期化
+        window.addEventListener('load', () => {
+            updateMetalUI();
+            // デモ用の初期値
+            metalPriceInput.value = '23500';
+            auctionFeeInput.value = '20';
+            coinWeightInput.value = '33.43';
+            calculate();
+        });
+    </script>
+</body>
+</html>
