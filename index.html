@@ -46,19 +46,19 @@
 
         .metal-selector {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 10px;
             margin-bottom: 25px;
         }
 
         .metal-btn {
-            padding: 12px 8px;
+            padding: 15px 12px;
             border: 2px solid #e0e0e0;
             background: white;
             border-radius: 10px;
             cursor: pointer;
             transition: all 0.3s;
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 600;
             text-align: center;
         }
@@ -76,7 +76,7 @@
 
         .metal-btn .emoji {
             display: block;
-            font-size: 20px;
+            font-size: 24px;
             margin-bottom: 5px;
         }
 
@@ -299,7 +299,7 @@
             }
 
             .metal-selector {
-                grid-template-columns: repeat(3, 1fr);
+                grid-template-columns: repeat(2, 1fr);
             }
 
             .result-item {
@@ -323,7 +323,7 @@
         <p class="subtitle">オークション中に素早く判断！</p>
 
         <div class="info-box">
-            💡 金属を選択して「最新相場を取得」で本日の価格を自動入力できます
+            💡 金属を選択して「最新相場を取得」で本日の価格を自動入力できます（田中貴金属の参考価格）
         </div>
 
         <label>金属の種類を選択</label>
@@ -336,14 +336,6 @@
                 <span class="emoji">🥈</span>
                 銀
             </button>
-            <button class="metal-btn" data-metal="platinum">
-                <span class="emoji">💠</span>
-                プラチナ
-            </button>
-            <button class="metal-btn" data-metal="copper">
-                <span class="emoji">🟫</span>
-                銅
-            </button>
             <button class="metal-btn" data-metal="custom">
                 <span class="emoji">⚙️</span>
                 カスタム
@@ -353,7 +345,7 @@
         <div class="input-group">
             <label for="metalPrice"><span id="metalName">金</span>の1gあたり価格</label>
             <div class="price-input-wrapper">
-                <input type="number" id="metalPrice" placeholder="例: 23500" step="0.01" min="0">
+                <input type="number" id="metalPrice" placeholder="例: 23937" step="0.01" min="0">
                 <button class="fetch-btn" id="fetchPrice">
                     📊 最新相場を取得
                 </button>
@@ -409,7 +401,7 @@
                     { value: 0.500, label: '50%', desc: '14K相当' }
                 ],
                 apiUrl: 'https://gold.tanaka.co.jp/commodity/souba/',
-                currentPrice: 23500
+                currentPrice: 23937
             },
             silver: {
                 name: '銀',
@@ -421,31 +413,7 @@
                     { value: 0.500, label: '50%', desc: '50%銀' }
                 ],
                 apiUrl: 'https://gold.tanaka.co.jp/commodity/souba/d-silver.php',
-                currentPrice: 145
-            },
-            platinum: {
-                name: 'プラチナ',
-                purities: [
-                    { value: 1.000, label: '100%', desc: '純プラチナ' },
-                    { value: 0.950, label: '95%', desc: 'Pt950' },
-                    { value: 0.900, label: '90%', desc: 'Pt900' },
-                    { value: 0.850, label: '85%', desc: 'Pt850' },
-                    { value: 0.500, label: '50%', desc: '50%プラチナ' }
-                ],
-                apiUrl: 'https://gold.tanaka.co.jp/commodity/souba/d-platinum.php',
-                currentPrice: 5300
-            },
-            copper: {
-                name: '銅',
-                purities: [
-                    { value: 1.000, label: '100%', desc: '純銅' },
-                    { value: 0.950, label: '95%', desc: '高純度銅' },
-                    { value: 0.900, label: '90%', desc: '90%銅' },
-                    { value: 0.850, label: '85%', desc: '85%銅' },
-                    { value: 0.500, label: '50%', desc: '50%銅' }
-                ],
-                apiUrl: null,
-                currentPrice: 1.88
+                currentPrice: 364.98
             },
             custom: {
                 name: 'カスタム金属',
@@ -537,14 +505,13 @@
             fetchPriceBtn.disabled = true;
 
             try {
-                // 実際のAPI呼び出しの代わりに、現在の推定価格を使用
-                // 実際の実装では、CORSプロキシやバックエンドAPIを通じて相場を取得
+                // 田中貴金属の参考価格を使用
                 await new Promise(resolve => setTimeout(resolve, 800));
                 
                 metalPriceInput.value = config.currentPrice;
                 calculate();
                 
-                alert(`✅ ${config.name}の参考価格を入力しました（約${config.currentPrice}円/g）\n\n※この価格は参考値です。最新の正確な相場は各貴金属業者のサイトでご確認ください。`);
+                alert(`✅ ${config.name}の参考価格を入力しました（${config.currentPrice}円/g）\n\n※この価格は2025年12月19日時点の田中貴金属店頭価格です。最新の正確な相場は田中貴金属のサイトでご確認ください。`);
             } catch (error) {
                 alert('❌ 相場の取得に失敗しました。手動で入力してください。');
             } finally {
@@ -612,7 +579,7 @@
         window.addEventListener('load', () => {
             updateMetalUI();
             // デモ用の初期値
-            metalPriceInput.value = '23500';
+            metalPriceInput.value = '23937';
             auctionFeeInput.value = '20';
             coinWeightInput.value = '33.43';
             calculate();
