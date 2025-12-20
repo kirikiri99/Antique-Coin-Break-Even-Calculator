@@ -46,7 +46,7 @@
 
         .metal-selector {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 10px;
             margin-bottom: 25px;
         }
@@ -300,10 +300,6 @@
                 <span class="emoji">🥈</span>
                 銀
             </button>
-            <button class="metal-btn" data-metal="custom">
-                <span class="emoji">⚙️</span>
-                カスタム
-            </button>
         </div>
 
         <div class="input-group">
@@ -369,17 +365,6 @@
                     { value: 0.500, label: '50%', desc: '50%銀' }
                 ],
                 apiUrl: 'https://tt.tanaka.jp/commodity/rate/silver.html'
-            },
-            custom: {
-                name: 'カスタム金属',
-                purities: [
-                    { value: 1.000, label: '100%', desc: '純金属' },
-                    { value: 0.986, label: '98.6%', desc: '98.6%' },
-                    { value: 0.917, label: '91.7%', desc: '91.7%' },
-                    { value: 0.900, label: '90%', desc: '90%' },
-                    { value: 0.500, label: '50%', desc: '50%' }
-                ],
-                apiUrl: null
             }
         };
 
@@ -416,13 +401,8 @@
             });
 
             // API利用可否に応じてボタンの表示を変更
-            if (!config.apiUrl) {
-                fetchPriceBtn.disabled = true;
-                fetchPriceBtn.textContent = '⚠️ 手動入力';
-            } else {
-                fetchPriceBtn.disabled = false;
-                fetchPriceBtn.textContent = '📊 最新相場を取得';
-            }
+            fetchPriceBtn.disabled = false;
+            fetchPriceBtn.textContent = '📊 最新相場を取得';
 
             calculate();
         }
@@ -430,12 +410,6 @@
         // 相場取得（新しいタブで田中貴金属のサイトを開く）
         fetchPriceBtn.addEventListener('click', () => {
             const config = metalConfigs[currentMetal];
-            
-            if (!config.apiUrl) {
-                alert('この金属は手動での価格入力が必要です');
-                return;
-            }
-
             // 新しいタブで田中貴金属のサイトを開く
             window.open(config.apiUrl, '_blank');
         });
