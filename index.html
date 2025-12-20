@@ -274,21 +274,6 @@
             color: #1565c0;
         }
 
-        .loading-spinner {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 2px solid rgba(255,255,255,0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 0.6s linear infinite;
-            margin-right: 8px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
         @media (max-width: 480px) {
             .container {
                 padding: 20px;
@@ -323,7 +308,7 @@
         <p class="subtitle">オークション中に素早く判断！</p>
 
         <div class="info-box">
-            💡 金属を選択して「最新相場を取得」で本日の価格を自動入力できます（田中貴金属の参考価格）
+            💡 金属を選択して「最新相場を取得」で田中貴金属のサイトが開きます。そこで確認した価格をコピーして、このフォームに貼り付けてください。
         </div>
 
         <label>金属の種類を選択</label>
@@ -400,8 +385,7 @@
                     { value: 0.900, label: '90%', desc: 'コインゴールド' },
                     { value: 0.500, label: '50%', desc: '14K相当' }
                 ],
-                apiUrl: 'https://tt.tanaka.jp/commodity/rate/gold.html',
-                currentPrice: 23937
+                apiUrl: 'https://tt.tanaka.jp/commodity/rate/gold.html'
             },
             silver: {
                 name: '銀',
@@ -412,8 +396,7 @@
                     { value: 0.900, label: '90%', desc: 'コイン銀' },
                     { value: 0.500, label: '50%', desc: '50%銀' }
                 ],
-                apiUrl: 'https://tt.tanaka.jp/commodity/rate/silver.html',
-                currentPrice: 364.98
+                apiUrl: 'https://tt.tanaka.jp/commodity/rate/silver.html'
             },
             custom: {
                 name: 'カスタム金属',
@@ -424,8 +407,7 @@
                     { value: 0.900, label: '90%', desc: '90%' },
                     { value: 0.500, label: '50%', desc: '50%' }
                 ],
-                apiUrl: null,
-                currentPrice: 10000
+                apiUrl: null
             }
         };
 
@@ -491,7 +473,7 @@
             calculate();
         }
 
-        // 相場取得
+        // 相場取得（新しいタブで田中貴金属のサイトを開く）
         fetchPriceBtn.addEventListener('click', () => {
             const config = metalConfigs[currentMetal];
             
@@ -500,21 +482,8 @@
                 return;
             }
 
-            // 参考価格を自動入力
-            metalPriceInput.value = config.currentPrice;
-            calculate();
-            
-            // 田中貴金属の最新価格ページを新しいタブで開く
-            const priceUrl = config.name === '金' 
-                ? 'https://tt.tanaka.jp/commodity/rate/gold.html'
-                : 'https://tt.tanaka.jp/commodity/rate/silver.html';
-            
-            window.open(priceUrl, '_blank');
-            
-            // 案内メッセージ
-            setTimeout(() => {
-                alert(`📊 ${config.name}の参考価格を入力しました（${config.currentPrice}円/g）\n\n✅ 新しいタブで田中貴金属の最新価格ページを開きました。\n\n💡 最新の価格を確認して、必要に応じて手動で修正してください。\n\n※参考価格は直近の田中貴金属の公表価格です。`);
-            }, 500);
+            // 新しいタブで田中貴金属のサイトを開く
+            window.open(config.apiUrl, '_blank');
         });
 
         // 計算処理
@@ -576,10 +545,8 @@
         window.addEventListener('load', () => {
             updateMetalUI();
             // デモ用の初期値
-            metalPriceInput.value = '23937';
             auctionFeeInput.value = '20';
             coinWeightInput.value = '33.43';
-            calculate();
         });
     </script>
 </body>
