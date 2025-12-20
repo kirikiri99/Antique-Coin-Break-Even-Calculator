@@ -152,28 +152,7 @@
         }
 
         .purity-selector {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 8px;
-            margin-top: 10px;
-        }
-
-        .purity-btn {
-            padding: 8px;
-            border: 2px solid #e0e0e0;
-            background: white;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: 600;
-            transition: all 0.3s;
-            text-align: center;
-        }
-
-        .purity-btn.active {
-            border-color: #667eea;
-            background: #667eea;
-            color: white;
+            display: none;
         }
 
         .results {
@@ -340,7 +319,7 @@
 
         <div class="input-group">
             <label for="auctionFee">オークション手数料</label>
-            <input type="number" id="auctionFee" placeholder="例: 20" step="0.1" min="0" max="100">
+            <input type="number" id="auctionFee" placeholder="例: 11.1" step="0.1" min="0" max="100">
             <div class="unit">%</div>
         </div>
 
@@ -348,13 +327,6 @@
             <label for="coinWeight">コインの重さ</label>
             <input type="number" id="coinWeight" placeholder="例: 10.5" step="0.01" min="0">
             <div class="unit">g</div>
-        </div>
-
-        <div class="input-group">
-            <label>含有量を選択（複数選択可）</label>
-            <div class="purity-selector" id="puritySelector">
-                <!-- 動的に生成 -->
-            </div>
         </div>
 
         <div class="results" id="results" style="display: none;">
@@ -437,28 +409,10 @@
             const config = metalConfigs[currentMetal];
             metalNameSpan.textContent = config.name;
             
-            // 含有量ボタンの生成
-            puritySelector.innerHTML = '';
+            // 全ての含有量を選択状態にする
             selectedPurities.clear();
-            
             config.purities.forEach(purity => {
-                const btn = document.createElement('button');
-                btn.className = 'purity-btn active';
-                btn.textContent = purity.label;
-                btn.dataset.value = purity.value;
                 selectedPurities.add(purity.value);
-                
-                btn.addEventListener('click', () => {
-                    btn.classList.toggle('active');
-                    if (btn.classList.contains('active')) {
-                        selectedPurities.add(purity.value);
-                    } else {
-                        selectedPurities.delete(purity.value);
-                    }
-                    calculate();
-                });
-                
-                puritySelector.appendChild(btn);
             });
 
             // API利用可否に応じてボタンの表示を変更
@@ -545,7 +499,7 @@
         window.addEventListener('load', () => {
             updateMetalUI();
             // デモ用の初期値
-            auctionFeeInput.value = '20';
+            auctionFeeInput.value = '11.1';
             coinWeightInput.value = '33.43';
         });
     </script>
